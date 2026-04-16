@@ -1,21 +1,21 @@
 <?php
 require '../db.php';
-require 'check_admin.php'; // Только для админа!
+require 'check_admin.php'; 
 
 $message = '';
 
-// Получаем id сборки из GET параметра
+
 $build_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if ($build_id) {
-    // Получаем данные о сборке из базы данных
+
     $sql = "SELECT * FROM builds WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $build_id]);
     $build = $stmt->fetch();
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Обрабатываем форму редактирования
+
         $name = trim($_POST['name']);
         $desc  = trim($_POST['description']);
         $price = $_POST['total_price'];
@@ -23,7 +23,7 @@ if ($build_id) {
         if (empty($name)) {
             $message = '<div class="alert alert-danger">Заполните название!</div>';
         } else {
-            // Обновляем сборку в базе данных
+
             $sql = "UPDATE builds SET name = :name, description = :description, total_price = :total_price WHERE id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':name' => $name, ':description' => $desc, ':total_price' => $price, ':id' => $build_id]);
@@ -31,7 +31,7 @@ if ($build_id) {
         }
     }
 } else {
-    // Если id сборки не передан, перенаправляем на панель администратора
+
     header('Location: admin_panel.php');
     exit();
 }
