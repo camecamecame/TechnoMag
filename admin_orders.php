@@ -2,7 +2,7 @@
 require 'check_admin.php'; // Только админ!
 require '../db.php';
 
-// САМОЕ СЛОЖНОЕ: Объединяем 3 таблицы в одном запросе
+
 $sql = "
     SELECT 
         orders.id as order_id,
@@ -53,7 +53,7 @@ $orders = $stmt->fetchAll();
                 <td><?= htmlspecialchars($order['title']) ?></td>
                 <td><?= $order['price'] ?> ₽</td>
                 <td>
-                    <!-- Кнопка для удаления заказа -->
+             
                     <a href="delete_order.php?id=<?= $order['order_id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Вы уверены, что хотите удалить этот заказ?')">Удалить</a>
                 </td>
             </tr>
