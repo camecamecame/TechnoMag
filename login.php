@@ -1,36 +1,35 @@
 <?php
-// Начинаем сессию и подключаемся к базе
+
 session_start();
 require '../db.php';
 
-// Генерация CSRF токена, если его нет в сессии
+
 if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));  // Генерация токена CSRF
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));  
 }
 
 $errorMsg = '';
 $successMsg = '';
 
-// Проверяем отправку формы
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Проверка CSRF токена
+
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         die("Ошибка CSRF! Запрос не прошел проверку.");
     }
 
-    // Получаем данные из формы
+
     $email = trim($_POST['email']);
     $pass = $_POST['password'];
 
-    // Валидация
     if (empty($email) || empty($pass)) {
         $errorMsg = "Заполните все поля!";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errorMsg = "Некорректный формат Email!";
     } else {
 
-        // Ищем пользователя по email
+
         $sql = "SELECT * FROM users WHERE email = :email LIMIT 1";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':email' => $email]);
@@ -38,16 +37,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user && password_verify($pass, $user['password_hash'])) {
 
-            // Создаем сессию
+
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_role'] = $user['role'];
             $_SESSION['user_email'] = $user['email'];
 
-            // Редирект по роли
+
             if ($user['role'] === 'admin') {
                 header("Location: admin_panel.php");
             } else {
-                header("Location: index.php"); // обычный пользователь
+                header("Location: index.php"); 
             }
             exit;
 
@@ -76,14 +75,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="card-body">
 
-                    <!-- Сообщения об ошибках -->
+
                     <?php if ($errorMsg): ?>
                         <div class="alert alert-danger"><?= $errorMsg ?></div>
                     <?php endif; ?>
 
-                    <!-- Форма входа -->
+        
                     <form method="POST" action="login.php">
-                        <!-- Скрытое поле с CSRF токеном -->
+                        
                         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
 
                         <div class="mb-3">
