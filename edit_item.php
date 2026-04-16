@@ -4,18 +4,18 @@ require 'check_admin.php'; // Только для админа!
 
 $message = '';
 
-// Получаем id товара из GET параметра
+
 $product_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if ($product_id) {
-    // Получаем данные о товаре из базы данных
+
     $sql = "SELECT * FROM products WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $product_id]);
     $product = $stmt->fetch();
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Обрабатываем форму редактирования
+
         $title = trim($_POST['title']);
         $price = $_POST['price'];
         $desc  = trim($_POST['description']);
@@ -24,7 +24,7 @@ if ($product_id) {
         if (empty($title)) {
             $message = '<div class="alert alert-danger">Заполните название!</div>';
         } else {
-            // Обновляем товар в базе данных
+
             $sql = "UPDATE products SET title = :title, description = :description, price = :price, image_url = :image_url WHERE id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':title' => $title, ':description' => $desc, ':price' => $price, ':image_url' => $img, ':id' => $product_id]);
@@ -32,7 +32,7 @@ if ($product_id) {
         }
     }
 } else {
-    // Если id товара не передан, перенаправляем на панель администратора
+
     header('Location: admin_panel.php');
     exit();
 }
