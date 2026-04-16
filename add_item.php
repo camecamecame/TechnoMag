@@ -9,13 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $price = $_POST['price'];
     $desc  = trim($_POST['description']);
     $img   = trim($_POST['image_url']);
-    $type  = $_POST['type'];  // Добавлено поле типа
-    $socket = $_POST['socket'];  // Получаем значение сокета
+    $type  = $_POST['type'];  
+    $socket = $_POST['socket'];  
 
     if (empty($title)) {
         $message = '<div class="alert alert-danger">Заполните название!</div>';
     } else {
-        // Вставляем товар с типом и сокетом (если он есть)
+     
         $sql = "INSERT INTO products (title, description, price, image_url, type, socket) VALUES (:t, :d, :p, :i, :type, :socket)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':t' => $title, ':d' => $desc, ':p' => $price, ':i' => $img, ':type' => $type, ':socket' => $socket]);
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="text" name="image_url" class="form-control mb-2" placeholder="URL картинки">
             <textarea name="description" class="form-control mb-2" placeholder="Характеристики"></textarea>
 
-            <!-- Добавление поля для выбора типа комплектующего -->
+   
             <select name="type" class="form-control mb-2" required>
                 <option value="CPU">Процессор</option>
                 <option value="GPU">Видеокарта</option>
@@ -52,14 +52,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <option value="Case">Корпус</option>
             </select>
 
-            <!-- Добавляем выпадающий список для сокета (только для процессоров) -->
+      
             <select name="socket" class="form-control mb-2">
                 <option value="">Выберите сокет (если применимо)</option>
                 <option value="LGA1700">LGA 1700</option>
                 <option value="AM4">AM4</option>
                 <option value="LGA1200">LGA 1200</option>
                 <option value="AM5">AM5</option>
-                <!-- Добавьте другие сокеты, если необходимо -->
+       
             </select>
 
             <button type="submit" class="btn btn-success">Сохранить</button>
