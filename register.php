@@ -2,7 +2,7 @@
 session_start();
 require '../db.php'; // Подключение к базе данных
 
-// Генерация CSRF токена
+
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
@@ -10,9 +10,9 @@ if (empty($_SESSION['csrf_token'])) {
 $errorMsg = '';
 $successMsg = '';
 
-// Обработка формы
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Проверка CSRF токена
+
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         die("Ошибка CSRF! Запрос не прошел проверку.");
     }
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
     $passwordConfirm = $_POST['password_confirm'];
 
-    // Валидация
+
     if (empty($email) || empty($password)) {
         $errorMsg = "Заполните все поля!";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -29,10 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $passwordConfirm) {
         $errorMsg = "Пароли не совпадают!";
     } else {
-        // Хеширование пароля
+
         $hash = password_hash($password, PASSWORD_DEFAULT);
 
-        // Вставка пользователя в базу данных
+     
         $sql = "INSERT INTO users (email, password_hash) VALUES (:email, :hash)";
         $stmt = $pdo->prepare($sql);
 
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <h4 class="mb-0">Регистрация</h4>
                 </div>
                 <div class="card-body">
-                    <!-- Блок вывода сообщений -->
+                
                     <?php if($errorMsg): ?>
                         <div class="alert alert-danger"><?= $errorMsg ?></div>
                     <?php endif; ?>
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="alert alert-success"><?= $successMsg ?></div>
                     <?php endif; ?>
 
-                    <!-- Форма регистрации -->
+                   
                     <form method="POST" action="register.php">
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label for="password_confirm" class="form-label">Подтверждение пароля</label>
                             <input type="password" name="password_confirm" id="password_confirm" class="form-control" required>
                         </div>
-                        <!-- Скрытое поле с CSRF токеном -->
+                     
                         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
 
                         <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
