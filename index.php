@@ -2,25 +2,25 @@
 session_start();
 require '../db.php';
 
-// Количество товаров на странице
+
 $items_per_page = 9;
 
-// Получаем текущую страницу из параметра URL, если его нет — устанавливаем 1
+
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
-// Рассчитываем OFFSET для SQL-запроса
+
 $offset = ($current_page - 1) * $items_per_page;
 
-// Получаем тип комплектующего и сокет из GET параметров (для фильтрации товаров)
+
 $type_filter = isset($_GET['type']) && !empty($_GET['type']) ? "WHERE type = :type" : '';
 $socket_filter = isset($_GET['socket']) && !empty($_GET['socket']) ? "AND socket = :socket" : '';
 
-// Проверяем, выбрал ли пользователь фильтр для сборок
+
 $build_filter = isset($_GET['filter']) && $_GET['filter'] == 'builds' ? true : false;
 
-// Если фильтруем по сборкам
+
 if ($build_filter) {
-    // Получаем все сборки с пагинацией
+
     $sql_builds = "SELECT * FROM builds ORDER BY id DESC LIMIT :limit OFFSET :offset";
     $stmt_builds = $pdo->prepare($sql_builds);
     $stmt_builds->bindParam(':limit', $items_per_page, PDO::PARAM_INT);
@@ -28,7 +28,7 @@ if ($build_filter) {
     $stmt_builds->execute();
     $builds = $stmt_builds->fetchAll();
 } else {
-    // Если фильтруем по типу товаров и сокету
+
     $sql_products = "SELECT * FROM products $type_filter $socket_filter ORDER BY id DESC LIMIT :limit OFFSET :offset";
     $stmt_products = $pdo->prepare($sql_products);
     
@@ -46,7 +46,7 @@ if ($build_filter) {
     $products = $stmt_products->fetchAll();
 }
 
-// Получаем общее количество товаров/сборок для расчета количества страниц
+
 $sql_total = $build_filter
     ? "SELECT COUNT(*) FROM builds"
     : "SELECT COUNT(*) FROM products $type_filter $socket_filter";
@@ -87,7 +87,7 @@ $total_pages = ceil($total_items / $items_per_page);
 </nav>
 
 <div class="container">
-    <!-- Форма фильтрации товаров и сборок -->
+
     <form method="GET" action="index.php" class="mb-4">
         <select name="type" class="form-control mb-3">
             <option value="">Все типы</option>
@@ -100,7 +100,7 @@ $total_pages = ceil($total_items / $items_per_page);
             <option value="GPU" <?= isset($_GET['type']) && $_GET['type'] == 'GPU' ? 'selected' : '' ?>>Видеокарта</option>
         </select>
 
-        <!-- Добавляем фильтр по сокету для процессоров -->
+
         <?php if (isset($_GET['type']) && $_GET['type'] == 'CPU'): ?>
             <select name="socket" class="form-control mb-3">
                 <option value="">Выберите сокет</option>
@@ -119,7 +119,7 @@ $total_pages = ceil($total_items / $items_per_page);
         <button type="submit" class="btn btn-primary">Применить фильтр</button>
     </form>
 
-    <!-- Если выбран фильтр для сборок, отображаем их -->
+
     <?php if ($build_filter): ?>
         <h2>Сборки компьютеров</h2>
         <div class="row">
@@ -136,7 +136,7 @@ $total_pages = ceil($total_items / $items_per_page);
                 </div>
             <?php endforeach; ?>
         </div>
-    <!-- Иначе отображаем товары -->
+
     <?php else: ?>
         <h2>Товары</h2>
         <div class="row">
@@ -156,7 +156,7 @@ $total_pages = ceil($total_items / $items_per_page);
         </div>
     <?php endif; ?>
 
-    <!-- Навигация по страницам -->
+
     <div class="pagination">
     <?php if ($current_page > 1): ?>
         <a href="?page=<?= $current_page - 1 ?>" class="btn btn-primary me-2">Предыдущая</a>
