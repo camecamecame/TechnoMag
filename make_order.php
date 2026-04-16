@@ -2,22 +2,20 @@
 session_start();
 require '../db.php';
 
-// Генерация CSRF токена
+
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// 1. Проверка: Вошел ли пользователь?
+
 if (!isset($_SESSION['user_id'])) {
     die("Сначала войдите в систему! <a href='login.php'>Вход</a>");
 }
 
-// 2. Получаем ID товара из ссылки (например, make_order.php?id=5)
-// (int) — это защита от хакеров, превращаем всё в число
 $product_id = (int)$_GET['id'];
 $user_id = $_SESSION['user_id'];
 
-// Проверка существования товара
+
 $check = $pdo->prepare("SELECT id FROM products WHERE id = ?");
 $check->execute([$product_id]);
 $exists = $check->fetch();
@@ -27,30 +25,30 @@ if (!$exists) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Проверка CSRF токена
+
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         die("Ошибка CSRF! Запрос не прошел проверку.");
     }
 
-    // 3. Получаем данные заказа (ФИО, телефон, адрес, и т.д.)
+
     $full_name = trim($_POST['full_name']);
     $phone = trim($_POST['phone']);
     $address = trim($_POST['address']);
     $email = trim($_POST['email']);
 
-    // Создаем заказ в таблице orders
+
     $stmt_order = $pdo->prepare("INSERT INTO orders (user_id, product_id) VALUES (?, ?)");
     try {
         $stmt_order->execute([$user_id, $product_id]);
-        $order_id = $pdo->lastInsertId();  // Получаем ID созданного заказа
+        $order_id = $pdo->lastInsertId(); 
 
-        // 4. Добавляем данные заказчика в таблицу customers
+  
         $stmt_customer = $pdo->prepare("INSERT INTO customers (order_id, full_name, phone, address, email) VALUES (?, ?, ?, ?, ?)");
         $stmt_customer->execute([$order_id, $full_name, $phone, $address, $email]);
 
-        // Перенаправление на страницу профиля
+
         header("Location: profile.php");
-        exit; // После редиректа выполнение скрипта останавливается
+        exit; 
     } catch (PDOException $e) {
         echo "Ошибка: " . $e->getMessage();
     }
@@ -69,7 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1>Оформление заказа</h1>
         <a href="index.php" class="btn btn-secondary mb-3">← На главную</a>
 
-        <!-- Форма для ввода данных заказчика -->
         <form method="POST" class="card p-4">
             <div class="mb-3">
                 <label for="full_name" class="form-label">ФИО</label>
@@ -88,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="email" name="email" id="email" class="form-control">
             </div>
 
-            <!-- Скрытое поле с CSRF токеном -->
+
             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
 
             <button type="submit" class="btn btn-success">Оформить заказ</button>
