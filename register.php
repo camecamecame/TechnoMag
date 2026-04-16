@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $stmt->execute([':email' => $email, ':hash' => $hash]);
             $successMsg = "Регистрация успешна! <a href='login.php'>Войти</a>";
-            unset($_SESSION['csrf_token']); // Удаляем токен после успешной обработки
+            unset($_SESSION['csrf_token']);
         } catch (PDOException $e) {
             if ($e->getCode() == 23000) {
                 $errorMsg = "Этот email уже зарегистрирован.";
