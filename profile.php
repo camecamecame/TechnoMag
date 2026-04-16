@@ -1,14 +1,14 @@
 <?php
-// Начинаем сессию и подключаемся к базе
+
 session_start();
 require '../db.php';
 
-// Генерация CSRF токена, если его нет в сессии
+
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// 1. Проверка доступа: Если не вошел — отправляем на вход
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
@@ -16,9 +16,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// 2. БЕЗОПАСНЫЙ ЗАПРОС (Anti-IDOR)
-// Мы выбираем только те заказы, где user_id совпадает с текущим пользователем.
-// Используем JOIN, чтобы получить название товара и цену из таблицы products.
+
 $sql = "
     SELECT 
         orders.id as order_id, 
@@ -48,7 +46,7 @@ $my_orders = $stmt->fetchAll();
 </head>
 <body class="bg-light">
 
-    <!-- Навигация -->
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
             <a class="navbar-brand" href="index.php">Мой Проект</a>
@@ -73,7 +71,7 @@ $my_orders = $stmt->fetchAll();
                     </div>
                     <div class="card-body">
                         
-                        <!-- Проверка: Есть ли заказы вообще? -->
+
                         <?php if (count($my_orders) > 0): ?>
                             
                             <div class="table-responsive">
@@ -90,26 +88,26 @@ $my_orders = $stmt->fetchAll();
                                     <tbody>
                                         <?php foreach ($my_orders as $order): ?>
                                             <tr>
-                                                <!-- ID заказа -->
+                                 
                                                 <td>#<?= $order['order_id'] ?></td>
                                                 
-                                                <!-- Дата (форматируем красиво) -->
+                                     
                                                 <td>
                                                     <?= date('d.m.Y H:i', strtotime($order['created_at'])) ?>
                                                 </td>
                                                 
-                                                <!-- Название товара (защита от XSS) -->
+                                            
                                                 <td>
                                                     <strong><?= htmlspecialchars($order['title']) ?></strong>
                                                 </td>
                                                 
-                                                <!-- Цена -->
+                                          
                                                 <td><?= number_format($order['price'], 0, '', ' ') ?> ₽</td>
                                                 
-                                                <!-- Статус с цветным бейджиком -->
+                                        
                                                 <td>
                                                     <?php 
-                                                    // Логика цвета для статуса
+                                        
                                                     $status_color = 'secondary';
                                                     if ($order['status'] == 'new') $status_color = 'primary';
                                                     if ($order['status'] == 'processing') $status_color = 'warning';
@@ -126,7 +124,7 @@ $my_orders = $stmt->fetchAll();
                             </div>
 
                         <?php else: ?>
-                            <!-- Если заказов нет -->
+                   
                             <div class="text-center py-5">
                                 <h4 class="text-muted">Вы еще ничего не заказывали.</h4>
                                 <a href="index.php" class="btn btn-primary mt-3">Перейти в каталог</a>
